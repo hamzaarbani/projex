@@ -1,0 +1,177 @@
+@import "tailwindcss";
+/* @tailwind base; */
+@tailwind utilities;
+
+
+/* ===== Manual Dark Mode Overrides (Fallback) ===== */
+
+/* Dark mode background */
+html.dark body {
+  background-color: #111827 !important; /* gray-900 */
+  color: #e5e7eb !important; /* gray-200 */
+}
+
+/* Dark mode cards, containers, panels */
+html.dark .bg-white {
+  background-color: #1f2937 !important; /* gray-800 */
+  color: #e5e7eb !important;
+}
+
+html.dark .bg-gray-50 {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #1f2937 !important;
+}
+
+html.dark .text-gray-900 {
+  color: #f3f4f6 !important; /* gray-100 */
+}
+
+html.dark .text-gray-700 {
+  color: #d1d5db !important; /* gray-300 */
+}
+
+html.dark .text-gray-600 {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+html.dark .text-gray-500 {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+html.dark .border-gray-200 {
+  border-color: #374151 !important; /* gray-700 */
+}
+
+html.dark .border-gray-300 {
+  border-color: #4b5563 !important; /* gray-600 */
+}
+
+html.dark .shadow-md,
+html.dark .shadow-sm,
+html.dark .shadow-xl {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Sidebar */
+html.dark .bg-white.dark\:bg-gray-800 {
+  background-color: #1f2937 !important;
+}
+
+/* Inputs */
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+  border-color: #4b5563 !important;
+}
+
+/* Buttons */
+html.dark .bg-indigo-600 {
+  background-color: #4f46e5 !important;
+}
+html.dark .bg-indigo-600:hover {
+  background-color: #4338ca !important;
+}
+
+html.dark .bg-green-600 {
+  background-color: #059669 !important;
+}
+html.dark .bg-green-600:hover {
+  background-color: #047857 !important;
+}
+
+html.dark .bg-red-600 {
+  background-color: #dc2626 !important;
+}
+html.dark .bg-red-600:hover {
+  background-color: #b91c1c !important;
+}
+
+/* Hover states */
+html.dark .hover\:bg-gray-100:hover {
+  background-color: #374151 !important;
+}
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #1f2937 !important;
+}
+html.dark .hover\:bg-gray-200:hover {
+  background-color: #4b5563 !important;
+}
+
+/* Links */
+html.dark a {
+  color: #818cf8 !important; /* indigo-400 */
+}
+html.dark a:hover {
+  color: #6366f1 !important; /* indigo-500 */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Add this to src/index.css after the @tailwind directives */
+
+/* ===== FullCalendar – Make All Dates Visible ===== */
+
+/* All day numbers */
+.fc-daygrid-day-number {
+  color: #1f2937 !important; /* dark gray – visible on light background */
+}
+
+/* Day names (Sun, Mon, etc.) */
+.fc-col-header-cell-cushion {
+  color: #1f2937 !important;
+  font-weight: 600 !important;
+}
+
+/* Month/Year title */
+.fc .fc-toolbar-title {
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+}
+
+/* Highlight today's date */
+.fc-day-today .fc-daygrid-day-number {
+  background: #eef2ff !important; /* indigo-50 */
+  border-radius: 50% !important;
+  padding: 4px !important;
+  width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #4f46e5 !important; /* indigo-600 */
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+}
+
+/* ===== Dark Mode Overrides ===== */
+.dark .fc-daygrid-day-number {
+  color: #e5e7eb !important; /* light gray – visible on dark background */
+}
+
+.dark .fc-col-header-cell-cushion {
+  color: #e5e7eb !important;
+}
+
+.dark .fc .fc-toolbar-title {
+  color: #f3f4f6 !important;
+}
+
+.dark .fc-day-today .fc-daygrid-day-number {
+  background: #312e81 !important; /* indigo-900 */
+  color: #818cf8 !important; /* indigo-400 */
+}
