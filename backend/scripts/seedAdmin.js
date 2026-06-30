@@ -12,6 +12,7 @@ const seedAdmin = async () => {
 
     // Find the user
     const user = await User.findOne({ email });
+
     if (!user) {
       console.log('❌ Admin user not found – creating new...');
       await User.create({
@@ -22,15 +23,16 @@ const seedAdmin = async () => {
       });
       console.log('✅ Admin user created with hashed password!');
     } else {
-      // ✅ Force update the password – triggers pre('save') hook
+      // ✅ FORCE update the password – this triggers pre('save') hook
+      console.log('✅ Admin found – overwriting password...');
       user.password = password;
       await user.save();
       console.log('✅ Admin password overwritten and hashed!');
     }
 
-    console.log('🔑 Login with:');
+    console.log('\n🔑 Login with:');
     console.log(`   Email: ${email}`);
-    console.log(`   Password: ${password}`);
+    console.log(`   Password: ${password}\n`);
 
     process.exit(0);
   } catch (error) {
