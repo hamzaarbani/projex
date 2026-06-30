@@ -1,7 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-// ✅ Log the CORS origin (to confirm it's read correctly)
 console.log('🔗 CORS origin allowed:', process.env.CLIENT_URL || 'http://localhost:5173');
 
 const express = require('express');
@@ -37,11 +36,24 @@ const server = http.createServer(app);
 
 // ---------- CORS (MUST be FIRST) ----------
 app.use(cors({
-  origin: true, // ✅ allow any origin (temporary for testing)
+  origin: true, // ✅ allow any origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
+
+// ✅ Manual OPTIONS handler – logs every preflight request
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    console.log('🔄 Preflight OPTIONS request:', req.url);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.sendStatus(200);
+    return;
+  }
+  next();
+});
 
 // ---------- Security ----------
 app.use(helmet());
