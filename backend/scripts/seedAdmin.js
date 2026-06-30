@@ -5,19 +5,21 @@ require('dotenv').config();
 const seedAdmin = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('Connected to MongoDB');
+    console.log('✅ Connected to MongoDB');
 
     const email = 'hamzaarbani80@gmail.com';
-    const password = 'arbani32';
+    const password = 'arbani32'; // Change this to your desired password
 
+    // Find existing user
     let user = await User.findOne({ email });
+
     if (user) {
-      // ✅ Set password and SAVE – triggers pre('save') hook
+      // ✅ Update password – this triggers the pre('save') hook
       user.password = password;
       await user.save();
       console.log('✅ Admin password updated (hashed)!');
     } else {
-      // ✅ Create – triggers pre('save') hook automatically
+      // ✅ Create new user – pre('save') hook runs automatically
       await User.create({
         name: 'Admin',
         email,
@@ -27,9 +29,13 @@ const seedAdmin = async () => {
       console.log('✅ Admin user created (hashed)!');
     }
 
+    console.log('🔑 You can now login with:');
+    console.log(`   Email: ${email}`);
+    console.log(`   Password: ${password}`);
+
     process.exit(0);
   } catch (error) {
-    console.error('Seed error:', error);
+    console.error('❌ Seed error:', error);
     process.exit(1);
   }
 };
