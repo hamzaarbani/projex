@@ -3,8 +3,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
+  port: 465,           // ✅ secure port
+  secure: true,        // ✅ true for port 465
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -12,13 +12,13 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
-  family: 4, // ✅ force IPv4 (fixes Railway timeout)
+  family: 4,           // ✅ force IPv4
 });
 
 exports.sendEmail = async (to, subject, text, html) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Projex" <${process.env.EMAIL_USER}>`,
+      from: `"Projex Team" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,
