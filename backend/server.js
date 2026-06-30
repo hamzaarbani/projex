@@ -1,8 +1,8 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-// ✅ Debug: log the CORS origin being used
-console.log('🔗 CORS origin allowed:', process.env.CLIENT_URL);
+// ✅ Log the CORS origin (to confirm it's read correctly)
+console.log('🔗 CORS origin allowed:', process.env.CLIENT_URL || 'http://localhost:5173');
 
 const express = require('express');
 const cors = require('cors');
@@ -36,14 +36,20 @@ const app = express();
 const server = http.createServer(app);
 
 // ---------- CORS (MUST be FIRST) ----------
-// ✅ For testing, allow all origins. Once it works, replace with:
-// origin: process.env.CLIENT_URL || 'http://localhost:5173'
 app.use(cors({
-  origin: true, // ✅ allows any origin (temporary for testing)
+  origin: true, // ✅ allow any origin (temporary for testing)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
+
+// ✅ Explicit OPTIONS handler for preflight
+app.options('*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.sendStatus(200);
+});
 
 // ---------- Security ----------
 app.use(helmet());
