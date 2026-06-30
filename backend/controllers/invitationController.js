@@ -45,19 +45,24 @@ exports.inviteMember = async (req, res) => {
       expiresAt,
     });
 
-    // Send email
+    // Build invite link
     const inviteLink = `${process.env.CLIENT_URL}/accept-invite?token=${token}`;
-    await sendEmail(
+    console.log('🔗 Invite link (copy this):', inviteLink);
+
+    // ✅ Respond immediately – don't wait for email to send
+    res.status(201).json({
+      message: 'Invitation created! The user can accept via the link (check server logs if email fails).',
+    });
+
+    // ✅ Send email in the background (fire and forget)
+    sendEmail(
       email,
       `Invitation to join "${workspace.name}" on Projex`,
       `You have been invited to join the workspace "${workspace.name}". Click the link to accept: ${inviteLink}`
-    );
+    ).catch(err => console.error('❌ Email send failed (but invite was created):', err.message));
 
-    res.status(201).json({
-      message: 'Invitation sent successfully! Please check your email and click the accept link.',
-    });
   } catch (error) {
-    console.error('Invite error:', error);
+    console.error('❌ Invite error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -100,12 +105,12 @@ exports.acceptInvitation = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // ✅ Email mismatch – return both emails
+    // Email mismatch – return both emails
     if (user.email !== invitation.email) {
       return res.status(403).json({
         message: 'This invitation was sent to a different email address.',
-        invitedEmail: invitation.email,   // ✅ target email
-        currentEmail: user.email,         // ✅ logged-in email
+        invitedEmail: invitation.email,
+        currentEmail: user.email,
       });
     }
 
