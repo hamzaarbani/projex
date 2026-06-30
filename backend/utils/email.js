@@ -1,33 +1,35 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
-  port: 465,           // ✅ secure port
-  secure: true,        // ✅ true for port 465
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  family: 4,           // ✅ force IPv4
-});
+// Initialize with your API key from environment variables
+const resend = new Resend(process.env.RESEND_API_KEY);
 
+/**
+ * Send an email using Resend
+ * @param {string} to - Recipient email
+ * @param {string} subject - Email subject
+ * @param {string} text - Plain text body
+ * @param {string} html - Optional HTML body (will be used if provided)
+ * @returns {Promise}
+ */
 exports.sendEmail = async (to, subject, text, html) => {
   try {
-    const info = await transporter.sendMail({
-      from: `"Projex Team" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'Projex <onboarding@resend.dev>',
       to,
       subject,
       text,
       html: html || `<p>${text}</p>`,
     });
-    console.log('✅ Email sent via Gmail:', info.response);
-    return info;
+
+    if (error) {
+      console.error('❌ Resend error:', error);
+      throw error;
+    }
+
+    console.log('✅ Email sent via Resend:', data);
+    return data;
   } catch (error) {
-    console.error('❌ Gmail send error:', error);
+    console.error('❌ Resend send error:', error);
     throw error;
   }
 };
