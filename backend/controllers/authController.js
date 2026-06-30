@@ -39,9 +39,12 @@ exports.login = async (req, res) => {
     }
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('❌ Login attempt – user not found:', email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+    console.log('✅ User found, comparing password...');
     const isMatch = await user.matchPassword(password);
+    console.log('🔑 Password match result:', isMatch);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -73,11 +76,12 @@ exports.forgotPassword = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
+      // Return generic message for security
       return res.json({ message: 'If that email exists, a reset link has been sent.' });
     }
 
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 3600000);
+    const expiresAt = new Date(Date.now() + 3600000); // 1 hour
 
     await PasswordResetToken.findOneAndUpdate(
       { email },
@@ -86,6 +90,9 @@ exports.forgotPassword = async (req, res) => {
     );
 
     const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
+    // ✅ Log the reset link – appears in Railway logs (even if email fails)
+    console.log('🔗 Reset link (copy this):', resetLink);
+
     await sendEmail(
       email,
       'Password Reset Request',
@@ -123,7 +130,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // ✅ Do NOT hash here – the pre‑save hook in User model will hash it
+    // ✅ Set password – the pre‑save hook in User model will hash it
     user.password = newPassword;
     await user.save();
 
