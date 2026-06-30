@@ -10,22 +10,21 @@ const seedAdmin = async () => {
     const email = 'hamzaarbani80@gmail.com';
     const password = 'arbani32';
 
-    // Find existing user
     let user = await User.findOne({ email });
     if (user) {
-      // Set password – this will trigger the pre‑save hook
+      // ✅ Set password and SAVE – triggers pre('save') hook
       user.password = password;
       await user.save();
-      console.log('✅ Admin password updated!');
+      console.log('✅ Admin password updated (hashed)!');
     } else {
-      // Create new user – this triggers the pre‑save hook
+      // ✅ Create – triggers pre('save') hook automatically
       await User.create({
         name: 'Admin',
         email,
         password,
         role: 'admin',
       });
-      console.log('✅ Admin user created!');
+      console.log('✅ Admin user created (hashed)!');
     }
 
     process.exit(0);
