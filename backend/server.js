@@ -4,7 +4,6 @@ dotenv.config();
 console.log('🔗 CORS origin allowed:', process.env.CLIENT_URL || 'http://localhost:5173');
 
 const express = require('express');
-const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const helmet = require('helmet');
@@ -34,24 +33,21 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
-// ---------- CORS (MUST be FIRST) ----------
-app.use(cors({
-  origin: true, // ✅ allow any origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-}));
-
-// ✅ Manual OPTIONS handler – logs every preflight request
+// ---------- Manual CORS Headers (BEFORE everything) ----------
 app.use((req, res, next) => {
+  // Allow all origins (for testing – restrict later)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight OPTIONS requests immediately
   if (req.method === 'OPTIONS') {
     console.log('🔄 Preflight OPTIONS request:', req.url);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.sendStatus(200);
     return;
   }
+  
   next();
 });
 
@@ -77,9 +73,8 @@ app.use((req, res, next) => {
 // ---------- Socket.io ----------
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: '*', // allow all for socket (we already have global CORS)
     methods: ['GET', 'POST'],
-    credentials: true,
   },
 });
 app.set('io', io);
