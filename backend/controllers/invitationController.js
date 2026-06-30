@@ -29,9 +29,9 @@ exports.inviteMember = async (req, res) => {
       return res.status(400).json({ message: 'User is already a member of this workspace' });
     }
 
-    // ✅ Always generate a new token
+    // Generate a new token
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
     // Delete any old pending invitation for this email + workspace
     await Invitation.deleteMany({ email, workspace: workspaceId, status: 'pending' });
@@ -45,11 +45,10 @@ exports.inviteMember = async (req, res) => {
       expiresAt,
     });
 
-    // Build invite link
     const inviteLink = `${process.env.CLIENT_URL}/accept-invite?token=${token}`;
     console.log('🔗 Invite link (copy this):', inviteLink);
 
-    // ✅ Respond immediately – don't wait for email to send
+    // ✅ Send response immediately – don't wait for email
     res.status(201).json({
       message: 'Invitation created! The user can accept via the link (check server logs if email fails).',
     });
@@ -57,8 +56,28 @@ exports.inviteMember = async (req, res) => {
     // ✅ Send email in the background (fire and forget)
     sendEmail(
       email,
-      `Invitation to join "${workspace.name}" on Projex`,
-      `You have been invited to join the workspace "${workspace.name}". Click the link to accept: ${inviteLink}`
+      `You're invited to join "${workspace.name}" on Projex`,
+      `Click here to join: ${inviteLink}`,
+      `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+          <h2 style="color: #4F46E5;">Projex</h2>
+          <p style="font-size: 16px; color: #333;">
+            You have been invited to join the workspace <strong>${workspace.name}</strong>.
+          </p>
+          <p style="font-size: 16px; color: #333;">
+            Click the button below to accept the invitation:
+          </p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${inviteLink}" style="display: inline-block; padding: 12px 24px; background-color: #4F46E5; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+              Accept Invitation
+            </a>
+          </div>
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #999;">
+            If you didn't request this, please ignore this email.
+          </p>
+        </div>
+      `
     ).catch(err => console.error('❌ Email send failed (but invite was created):', err.message));
 
   } catch (error) {
