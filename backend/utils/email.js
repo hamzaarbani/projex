@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
-  family: 4, // ✅ force IPv4
+  family: 4, // ✅ force IPv4 (fixes Railway timeout)
 });
 
 exports.sendEmail = async (to, subject, text, html) => {
