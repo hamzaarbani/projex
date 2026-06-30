@@ -8,28 +8,27 @@ const seedAdmin = async () => {
     console.log('✅ Connected to MongoDB');
 
     const email = 'hamzaarbani80@gmail.com';
-    const password = 'arbani32'; // Change this to your desired password
+    const password = 'arbani32';
 
-    // Find existing user
-    let user = await User.findOne({ email });
-
-    if (user) {
-      // ✅ Update password – this triggers the pre('save') hook
-      user.password = password;
-      await user.save();
-      console.log('✅ Admin password updated (hashed)!');
-    } else {
-      // ✅ Create new user – pre('save') hook runs automatically
+    // Find the user
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log('❌ Admin user not found – creating new...');
       await User.create({
         name: 'Admin',
         email,
         password,
         role: 'admin',
       });
-      console.log('✅ Admin user created (hashed)!');
+      console.log('✅ Admin user created with hashed password!');
+    } else {
+      // ✅ Force update the password – triggers pre('save') hook
+      user.password = password;
+      await user.save();
+      console.log('✅ Admin password overwritten and hashed!');
     }
 
-    console.log('🔑 You can now login with:');
+    console.log('🔑 Login with:');
     console.log(`   Email: ${email}`);
     console.log(`   Password: ${password}`);
 
