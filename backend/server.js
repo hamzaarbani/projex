@@ -1,6 +1,9 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
+// ✅ Debug: log the CORS origin being used
+console.log('🔗 CORS origin allowed:', process.env.CLIENT_URL);
+
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
@@ -22,7 +25,7 @@ const attachmentRoutes = require('./routes/attachmentRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const userRoutes = require('./routes/userRoutes');
 const aiRoutes = require('./routes/aiRoutes');
-const subtaskRoutes = require('./routes/subtaskRoutes'); // ✅ added
+const subtaskRoutes = require('./routes/subtaskRoutes');
 
 const Message = require('./models/Message');
 
@@ -32,9 +35,11 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
-// ---------- CORS ----------
+// ---------- CORS (MUST be FIRST) ----------
+// ✅ For testing, allow all origins. Once it works, replace with:
+// origin: process.env.CLIENT_URL || 'http://localhost:5173'
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: true, // ✅ allows any origin (temporary for testing)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -120,7 +125,7 @@ app.use('/api/invitations', invitationRoutes);
 app.use('/api/attachments', attachmentRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/ai', aiRoutes);
-app.use('/api/subtasks', subtaskRoutes); // ✅ subtasks
+app.use('/api/subtasks', subtaskRoutes);
 
 app.get('/', (req, res) => res.send('API is running...'));
 
